@@ -1,5 +1,7 @@
 package solution;
 
+
+
 public class Individual {
 	private Gene[] genes; //chromosome
 	private int fitness;
@@ -153,6 +155,10 @@ public class Individual {
 		return g;
 	}
 
+	public void setFitness(int fitness) {
+		this.fitness = fitness;
+	}
+
 	public Gene[] getGenes() {
 		return genes;
 	}
@@ -160,5 +166,7 @@ public class Individual {
 	public int getFitness() {
 		return fitness;
 	}
+
+
 	
 }

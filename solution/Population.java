@@ -12,8 +12,7 @@ public class Population {
 	}
 	
 	public Population(ArrayList<Individual> previousPopulation, int pSize, int geneLength, int positions) {
-		individuals = previousPopulation;
-		crossOver(previousPopulation, pSize, geneLength, positions);
+		individuals = new ArrayList<Individual>();
 	}
 	
 	private void generatePopulation(int pSize, int geneLength, int positions) {
@@ -37,7 +36,7 @@ public class Population {
 		}
 	}
 	
-	private void crossOver(ArrayList<Individual> prev, int pSize, int geneLength, int positions) {
+	public void crossOver(ArrayList<Individual> prev, int pSize, int geneLength, int positions) {
 		int p1Index, p2Index;
 		Gene[] newChromo, p1, p2;
 		
@@ -52,11 +51,59 @@ public class Population {
 			int x = 0;
 			
 			while (x < geneLength) {
-				newChromo[x] = p1[x]; x++;
-				newChromo[x] = p2[x]; x++;
+				int turn = new Random().nextInt(2);
+				turn = (turn > 0 ? 1 : -1);
+				
+				if (new Random().nextInt(100) > 4) //mutation rate 4%
+					newChromo[x] = p1[x];
+				else 
+					newChromo[x] = new Gene(new Random().nextInt(positions), turn);
+				x++;
+				
+				if (new Random().nextInt(100) > 4) 
+					newChromo[x] = p2[x];
+				else 
+					newChromo[x] = new Gene(new Random().nextInt(positions), turn);
+				x++;
 			}
 			
 			individuals.add(new Individual(newChromo));
 		}
+	}
+	
+	public ArrayList<Individual> tournament(ArrayList<Individual> prev, int count, int size) {
+		ArrayList<Individual> actual = new ArrayList<>();
+		ArrayList<Individual> result = new ArrayList<>();
+		int bound = prev.size();
+		
+		for (int i = 0; i < count ; i++){
+			actual.clear();
+			Individual best = null;
+			int rndIndex = new Random().nextInt(bound);
+			
+			for (int j = 0; j < size; j++) {
+				Individual currentI = prev.get(rndIndex);
+				if (actual.contains(currentI) == false) actual.add(currentI);
+				
+				if (best == null) best = currentI;
+				else {
+					if (best.getFitness() < currentI.getFitness()) { best = currentI; 
+				}
+				
+			}
+		}
+		
+		return result;
+	}
+	
+	public ArrayList<Individual> roulette() {
+		ArrayList<Individual> list = new ArrayList<>();
+		
+		
+		return list;
+	}
+
+	public ArrayList<Individual> getIndividuals() {
+		return individuals;
 	}
 }
