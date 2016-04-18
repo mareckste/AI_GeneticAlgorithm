@@ -20,13 +20,16 @@ public class Individual {
 			int start = gene.getStart();
 			int x = 0, y = 0;
 			int turn = gene.getTurn();
+			int []index;
 			
 			if (start < w) dir = 1; 										//up -> down
 			if ((start >= w) && (start < (w + h))) dir = 2; 				//right -> left
 			if ((start >= (w + h)) && (start < (2*w + h))) dir = 3;		// down -> up
 			if (start >= (2*w + h)) dir = 4;   							//left -> right
 			
-			Functions.startingCoordinates(x, y, dir, start, h, w);
+			index = Functions.startingCoordinates(x, y, dir, start, h, w);
+			x = index[0];
+			y = index[1];
 			i++;
 			
 			while (true) {
@@ -41,8 +44,19 @@ public class Individual {
 					if (x < 0 || x > h - 1) break; 					//edge
 					
 					if (g[x][y] != 0) {							//prekazka
-						if (dir == 1) x--;
-						else x++;
+						if (dir == 1) {
+							if (x - 1 >= 0) {
+							g[--x][y] = 0;}
+							else{ i--; break;}
+						}
+						else {
+							if (x + 1 < h)
+							g[++x][y] = 0;
+							else { i--;
+								break;
+							}
+							}
+						
 						
 						if ((dir == 1 && turn == -1) || (dir == 3 && turn == 1)) { 
 							if ((y + 1) > (w - 1)) {
@@ -100,8 +114,14 @@ public class Individual {
 					if (y < 0 || y > w-1) break; 					//edge
 					
 					if (g[x][y] != 0) {							//prekazka
-						if (dir == 4) y--;
-						else y++;
+						if (dir == 4) {
+							if (y - 1 >= 0) g[x][--y] = 0;
+							else { i--; break;}
+						}
+						else {
+							if (y + 1 < w) g[x][++y] = 0;
+							else { i--; break;}
+						}
 						
 						if ((dir == 2 && turn == -1) || (dir == 4 && turn == 1)) { 
 							if (x == h - 1) {

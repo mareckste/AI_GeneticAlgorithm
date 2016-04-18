@@ -1,7 +1,6 @@
 package solution;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Random;
 
 public class Population {
@@ -14,6 +13,7 @@ public class Population {
 	
 	public Population(ArrayList<Individual> previousPopulation, int pSize, int geneLength, int positions) {
 		individuals = new ArrayList<Individual>();
+		crossOver(previousPopulation, pSize, geneLength, positions);
 	}
 	
 	private void generatePopulation(int pSize, int geneLength, int positions) {
@@ -33,7 +33,7 @@ public class Population {
 				 c.add(t);
 				 chromosome[j] = new Gene(c.get(j), turn);
 			 }
-			individuals.add(i, new Individual(chromosome)); 
+			individuals.add(new Individual(chromosome)); 
 		}
 	}
 	
@@ -55,81 +55,24 @@ public class Population {
 				int turn = new Random().nextInt(2);
 				turn = (turn > 0 ? 1 : -1);
 				
-				if (new Random().nextInt(100) > 4) //mutation rate 4%
-					newChromo[x] = p1[x];
-				else 
-					newChromo[x] = new Gene(new Random().nextInt(positions), turn);
-				x++;
-				
-				if (new Random().nextInt(100) > 4) 
-					newChromo[x] = p2[x];
-				else 
-					newChromo[x] = new Gene(new Random().nextInt(positions), turn);
-				x++;
+				if (x < geneLength/2) {
+					if (new Random().nextInt(100) > 4) //mutation rate 4%
+						newChromo[x] = p1[x];
+					else 
+						newChromo[x] = new Gene(new Random().nextInt(positions), turn);
+						x++;
+				}
+				else {
+					if (new Random().nextInt(100) > 4) 
+						newChromo[x] = p2[x];
+					else 
+						newChromo[x] = new Gene(new Random().nextInt(positions), turn);
+					x++;
+				}
 			}
 			
 			individuals.add(new Individual(newChromo));
 		}
-	}
-	
-	public ArrayList<Individual> tournament(ArrayList<Individual> prev, int count, int size) {
-		ArrayList<Individual> actual = new ArrayList<>();
-		ArrayList<Individual> result = new ArrayList<>();
-		int bound = prev.size();
-		
-		for (int i = 0; i < count ; i++){
-			actual.clear();
-			Individual best = null;
-			int rndIndex = new Random().nextInt(bound);
-			
-			for (int j = 0; j < size; j++) {
-				Individual currentI = prev.get(rndIndex);
-				if (actual.contains(currentI) == false) actual.add(currentI);
-				
-				if (best == null) best = currentI;
-				else {
-					if (best.getFitness() < actual.get(actual.size()-1).getFitness()) {
-						best = actual.get(actual.size()-1);
-					}
-				}
-				
-			}
-			result.add(best);
-		}
-		
-		return result;
-	}
-	
-	public ArrayList<Individual> roulette(ArrayList<Individual> prev, int count) {
-		ArrayList<Individual> list = new ArrayList<>();
-		int bound = 0;
-		int sum = 0;
-		int rNumber;
-		
-		for (Individual i : prev) {
-			bound += i.getFitness();
-		}
-		
-		for (int j = 0; j < count; j++) {
-			rNumber = new Random().nextInt(bound);
-			for (Individual i : prev) {
-				sum += i.getFitness();
-				if (sum >= rNumber) {
-					list.add(i);
-					break;
-				}
-			}
-		}
-		return list;
-	}
-	
-	public ArrayList<Individual> elite(ArrayList<Individual> prev, int count) {
-		ArrayList<Individual> list = new ArrayList<>();
-		Collections.sort(prev, new IndComparator());
-		for (int i = 0; i < count; i++) {
-			list.add(prev.get(i));
-		}
-		return list;
 	}
 
 	public ArrayList<Individual> getIndividuals() {

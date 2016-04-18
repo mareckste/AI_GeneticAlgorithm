@@ -1,28 +1,56 @@
 package solution;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class Runner {
 
+	private final static int[][] garden = {
+			{0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0},
+			{0,	0,	0,	0,	0,	-1,	0,	0,	0,	0,	0,	0},
+			{0,	-1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0},
+			{0,	0,	0,	0,	-1,	0,	0,	0,	0,	0,	0,	0},
+			{0,	0,	-1,	0,	0,	0,	0,	0,	0,	0,	0,	0},
+			{0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0},
+			{0,	0,	0,	0,	0,	0,	0,	0,	-1,	-1,	0,	0},
+			{0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0},
+			{0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0},
+			{0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0}
+	};
+	
 	public static void main(String[] args) {
-		ArrayList<Individual> l = new ArrayList<>();
-		Gene [] g = new Gene[4];
+		Garden g = new Garden(garden);
+		int genes = garden.length + garden[0].length + 6;
+		int counter = 1;
+		int positions = 2*(garden.length + garden[0].length);
 		
-		Individual i = new Individual(g);
-		i.setFitness(5);
-		l.add(i);
-		i = new Individual(g);
-		i.setFitness(9);
-		l.add(i);
+		Population p = new Population(100, genes, positions);
 		
-		i = new Individual(g);
-		i.setFitness(4);
-		l.add(i);
-		
-		Collections.sort(l, new IndComparator());
-		for (int i1 = 0; i1 < l.size(); i1++) {
-			System.out.println(l.get(i1).getFitness());
+		while (true) {
+			ArrayList<Individual> populationList = p.getIndividuals();
+			
+			for (Individual ind : populationList) {
+				int [][] garden = ind.plowGarden(g);
+				int fitness;
+				
+				
+				fitness = Functions.calcFitness(garden);
+				
+				ind.setFitness(fitness);
+				if (Functions.isSolved(garden) == true) {
+					System.out.println("Solution found on population number: " + counter);
+					Functions.displayPlownGarden(garden);
+					System.out.println("Fitness:" + fitness + "\n" );
+					return;
+				}				
+
+			}
+			ArrayList<Individual> newGen = Functions.elite(p.getIndividuals(), 20);
+			//ArrayList<Individual> tournament = Functions.tournament(p.getIndividuals(), 100, 4);
+			ArrayList<Individual> roulette = Functions.roulette(p.getIndividuals(), 80);
+			p = new Population(roulette, 80, genes, positions);
+			//p = new Population(100, genes, positions);
+			counter++;
+			p.getIndividuals().addAll(newGen);
 		}
 	}
 
