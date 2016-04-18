@@ -1,6 +1,7 @@
 package solution;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 public class Population {
@@ -87,19 +88,47 @@ public class Population {
 				
 				if (best == null) best = currentI;
 				else {
-					if (best.getFitness() < currentI.getFitness()) { best = currentI; 
+					if (best.getFitness() < actual.get(actual.size()-1).getFitness()) {
+						best = actual.get(actual.size()-1);
+					}
 				}
 				
 			}
+			result.add(best);
 		}
 		
 		return result;
 	}
 	
-	public ArrayList<Individual> roulette() {
+	public ArrayList<Individual> roulette(ArrayList<Individual> prev, int count) {
 		ArrayList<Individual> list = new ArrayList<>();
+		int bound = 0;
+		int sum = 0;
+		int rNumber;
 		
+		for (Individual i : prev) {
+			bound += i.getFitness();
+		}
 		
+		for (int j = 0; j < count; j++) {
+			rNumber = new Random().nextInt(bound);
+			for (Individual i : prev) {
+				sum += i.getFitness();
+				if (sum >= rNumber) {
+					list.add(i);
+					break;
+				}
+			}
+		}
+		return list;
+	}
+	
+	public ArrayList<Individual> elite(ArrayList<Individual> prev, int count) {
+		ArrayList<Individual> list = new ArrayList<>();
+		Collections.sort(prev, new IndComparator());
+		for (int i = 0; i < count; i++) {
+			list.add(prev.get(i));
+		}
 		return list;
 	}
 
